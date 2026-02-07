@@ -157,9 +157,11 @@ body {
   justify-content: space-between;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  border-color: var(--burgundy-light);
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-5px);
+    border-color: var(--burgundy-light);
+  }
 }
 
 .card.purchased {
@@ -280,12 +282,13 @@ body {
     flex-direction: column;
     gap: 10px;
     width: 100%;
+    margin-bottom: -10px;
   }
 
   /* 1段目：COMPLETEカード（横幅いっぱい） */
   .stat-card.main-stat {
     flex: 0 0 100%;
-    padding: 15px;
+    padding: 5px 10px;
     min-height: auto;
     min-height: 55px;
   }
@@ -305,7 +308,7 @@ body {
   .stats-sub-row .stat-card {
     flex: 1;
     min-width: 0;
-    padding: 12px;
+    padding: 5px 10px;
   }
 
   .stat-value {
@@ -347,8 +350,9 @@ body {
   }
 
   .card {
-    padding: 12px;
+    padding: 5px;
     min-height: 70px;
+    justify-content: space-evenly;
   }
 
   .voice-title {
@@ -372,7 +376,14 @@ body {
   .card.purchased::before {
     font-size: 0.5rem;
     padding: 1px 4px;
-    top: 5px;
+    top: 2px;
     right: 5px;
+  }
+  .card-footer {
+    margin-top: 0px;
+  }
+
+  .sub-filters {
+    margin-bottom: 10px;
   }
 }
