@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sherlin Voice Manager</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-label">COMPLETE</div>
+          <div id="progress-text" class="stat-value">0 / 0</div>
+          <div class="progress-bar-bg">
+            <div id="progress-bar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">未購入の合計金額</div>
+          <div id="remaining-budget" class="stat-value">¥0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">購入済みの合計金額</div>
+          <div id="purchased-total" class="stat-value">¥0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-group-container">
+      <div class="filter-label">STATUS</div>
+      <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all">すべて</button>
+        <button class="filter-btn" data-filter="unpurchased">未購入</button>
+        <button class="filter-btn" data-filter="purchased">購入済み</button>
+      </div>
+    </div>
+
+    <div class="filter-group-container">
+      <div class="filter-label">TYPE</div>
+      <div class="filter-controls sub-filters">
+        <button class="type-btn active" data-type="all">すべて</button>
+        <button class="type-btn" data-type="ex-on">EXあり</button>
+        <button class="type-btn" data-type="ex-off">EXなし</button>
+        <button class="type-btn" data-type="kv">キービジュアルセット</button>
+      </div>
+    </div>
+
+    <div id="voice-grid" class="grid"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
