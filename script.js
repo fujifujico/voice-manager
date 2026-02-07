@@ -925,7 +925,13 @@ const voiceData = [
   },
 ];
 
+// --- 修正箇所1: 冒頭の読み込み処理 ---
 let purchasedIds = JSON.parse(localStorage.getItem("sherlin_purchased")) || [];
+// 重複を削除し、かつ現在の voiceData に存在するIDだけに絞り込んで初期化
+purchasedIds = [...new Set(purchasedIds)].filter((id) =>
+  voiceData.some((item) => item.id === id),
+);
+localStorage.setItem("sherlin_purchased", JSON.stringify(purchasedIds));
 
 function render() {
   const grid = document.getElementById("voice-grid");
@@ -935,32 +941,26 @@ function render() {
 
   grid.innerHTML = "";
 
-  // 1. まず「どのタイトルにEXが存在するか」をリストアップする
   const titlesWithEX = voiceData
     .filter((item) => item.title.includes("EX"))
     .map((item) => item.title.replace("EX ", "").trim());
 
   const filteredData = voiceData.filter((item) => {
-    // 【判定1】購入状況
     const matchesPurchase =
       purchaseFilter === "all" ||
       (purchaseFilter === "purchased" && purchasedIds.includes(item.id)) ||
       (purchaseFilter === "unpurchased" && !purchasedIds.includes(item.id));
 
-    // 【判定2】ボイス種別
     let matchesType = true;
     const isKV = item.title.includes("キービジュアルセット");
     const isEX = item.title.includes("EX");
-    // 本編ボイス（EXではない）だが、EX版が存在するものか判定
     const hasEXVersion = titlesWithEX.some((exTitle) =>
       item.title.includes(exTitle),
     );
 
     if (typeFilter === "ex-on") {
-      // EXそのもの、またはEX版が存在する本編を表示
       matchesType = isEX || (hasEXVersion && !isKV);
     } else if (typeFilter === "ex-off") {
-      // EX版が存在しない本編のみを表示（EXそのものは除外）
       matchesType = !isEX && !hasEXVersion && !isKV;
     } else if (typeFilter === "kv") {
       matchesType = isKV;
@@ -971,7 +971,6 @@ function render() {
     return matchesPurchase && matchesType;
   });
 
-  // --- カード生成処理 ---
   filteredData.forEach((item) => {
     const isPurchased = purchasedIds.includes(item.id);
     const pidMatch = item.url.match(/pid=([^&]+)/);
@@ -1006,19 +1005,29 @@ function togglePurchase(id) {
   } else {
     purchasedIds.push(id);
   }
+  // 保存時にも念のため重複排除
+  purchasedIds = [...new Set(purchasedIds)];
   localStorage.setItem("sherlin_purchased", JSON.stringify(purchasedIds));
   render();
 }
 
+// --- 修正箇所2: updateStats 関数 ---
 function updateStats() {
   const total = voiceData.length;
-  const count = purchasedIds.length;
+
+  // 現在のリストに存在するボイスのIDだけを正確に抽出
+  const validPurchasedIds = purchasedIds.filter((id) =>
+    voiceData.some((item) => item.id === id),
+  );
+
+  const count = validPurchasedIds.length;
+
   const remaining = voiceData
-    .filter((item) => !purchasedIds.includes(item.id))
+    .filter((item) => !validPurchasedIds.includes(item.id))
     .reduce((sum, item) => sum + item.price, 0);
 
   const purchasedTotal = voiceData
-    .filter((item) => purchasedIds.includes(item.id))
+    .filter((item) => validPurchasedIds.includes(item.id))
     .reduce((sum, item) => sum + item.price, 0);
 
   document.getElementById("progress-text").innerText = `${count} / ${total}`;
@@ -1030,7 +1039,6 @@ function updateStats() {
     `¥${purchasedTotal.toLocaleString()}`;
 }
 
-// 既存の購入状況ボタン用
 document.querySelectorAll(".filter-btn").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     document
@@ -1041,7 +1049,6 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
   });
 });
 
-// 新規：ボイス種別ボタン用
 document.querySelectorAll(".type-btn").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     document
